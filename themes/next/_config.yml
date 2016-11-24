@@ -34,7 +34,7 @@ menu:
   home: /
   categories: /categories
   #about: /about
-  archives: /archives
+  archives: /archivers
   tags: /tags
   #sitemap: /sitemap.xml
   #commonweal: /404.html
@@ -209,7 +209,7 @@ auto_excerpt:
 # Post meta display settings
 post_meta:
   created_at: true
-  updated_at: true
+  updated_at: false
   categories: true
 
 
@@ -367,7 +367,7 @@ baidu_push: false
 # API Documentation:
 # https://developers.google.com/google-apps/calendar/v3/reference/events/list
 calendar:
-  enable: false
+  enable: true
   calendar_id: <required>
   api_key: <required>
   orderBy: startTime
