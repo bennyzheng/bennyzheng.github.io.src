@@ -1,6 +1,7 @@
 ---
 title: 数据存储方式 - endian
 date: 2016-11-23 00:00:00
+categories: 其它技术话题
 tags:
   - Binary
   - Endian

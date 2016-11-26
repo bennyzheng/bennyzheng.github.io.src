@@ -11,7 +11,7 @@ language: zh-Hans
 timezone: Asia/Shanghai
 avatar: /images/face.png
 
-keywords: "Javascript, Web, 前端开发, RIA, FE, js, 脚本语言, ECMAScript, Node, DOM, XML, Mobile"
+keywords: "Javascript, Web, 前端开发, RIA, FE, js, 脚本语言, ECMAScript, Node, DOM, XML, Mobile, css, css3, html5, ajax"
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://bennyzheng.github.io/

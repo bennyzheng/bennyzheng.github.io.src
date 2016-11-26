@@ -1,6 +1,6 @@
 ---
 title: 缓冲数组以及数据视图
-categories: Javascript 
+categories: javascript 
 date: 2016-11-21 00:00:00
 tags:
   - TypeArray
