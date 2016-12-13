@@ -17,13 +17,13 @@ F    F
 
 网上有篇文章讲解endian，使用了0x12345678作为例子，我觉得非常好，事实上我也是参考了那篇文章，并把自己的理解写在这。这个数字是8个16进制字符，按2个字符1个字节算其实它就是一个32位的无符号整型，即4个字节，按照我们的书写习惯它应该是这么写的：
 
-![big-endian](/images/2016/11/endian-1.png)
+![big-endian](/images/2016/endian-1.png)
 
 这种写法被称为big-endian，它的存储原则是高位优先，从高位字节到低位字节按顺序写到相邻的四个字节中，PowerPC采用的正是这种方式。
 
 Intel采用是little-endian，它的存储原则是低位优先，从低位字节到高拉字节按顺序写到相邻的四个字节中，也就是big-endian反过来：
 
-![little-endian](/images/2016/11/endian-2.png)
+![little-endian](/images/2016/endian-2.png)
 
 二者到底有什么优缺点呢？
 
