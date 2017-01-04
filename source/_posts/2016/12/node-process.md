@@ -60,6 +60,9 @@ node test.js 2>> filename
 
 # 将标准错误重定向到标准输出
 node test.js 2>&1
+
+# 将标准输出关闭(POSIX)
+node test.js > /dev/null
 ```
 
 除了标准IO设备之外，Node.js还提供了警告相关的功能，可以通过process.emitWarning输出一个警告信息，同时也可以为进程绑定warning事件用于监听该警告。
@@ -107,7 +110,7 @@ try {
 
 try-catch会将异常捕获，并且把ex当参数传给catch代码块，可以在里边做异常处理。当然，如果有需要，在catch代码块中对异常做完处理之后也可以再使用throw抛出错误。
 
-除了try-catch，进程对象还提供了uncaughtException事件用于捕获未使用try-catchr捕获的异常并对其做统一处理：
+除了try-catch，进程对象还提供了uncaughtException事件用于捕获未使用try-catch捕获的异常并对其做统一处理：
 
 ```javascript
 setTimeout(function(){}, 5000);
@@ -431,7 +434,7 @@ child.stderr.on("data", function(chunk) {
 });
 ```
 
-* child_process.fork(modulePath[, args][, options])
+* fork(modulePath[, args][, options])
 
 fork一个有Node.js特色的建立子进程的方式，它允许指定一个js文件作为启动代码在Node.js环境下执行，这是spawn方法的特殊应用场景，子进程将与父进程建立IPC通道用于进程通讯，而fork方法返回的子进程对象的stdio将不会被赋值，父进程与子进程将以IPC通道进行通讯。
 
