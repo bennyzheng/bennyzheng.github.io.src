@@ -129,7 +129,7 @@ ClientRequest涉及到请求报文主体的API有以下几个：
 
 # 请求超时与中断处理
 
-网上许多文章使用了setTimeout来做超时，Node.js在v0.5.9时为ClientRequest新增加了一个setTimeout方法，它能够指定请求发起后多久如果响应数据还没接收完成则调用回调函数告诉使用者时间已经到了，使用者可以在setTimeout方法中做超时处理，比如调用ClientRequest的abort方法中断请求。
+网上许多文章使用了setTimeout来做超时，Node.js在v0.5.9时为ClientRequest新增加了一个setTimeout方法，它能够指定请求发起后多久如果响应数据还没接收完成则调用回调函数告诉使用者时间已经到了，使用者可以在setTimeout方法中做超时处理，比如调用ClientRequest的abort方法中断请求。另外，ClientRequest提供了clearTimeout方法用于取消计时器。
 
 以下是php代码，它请在接收到请求后先睡眠3秒再发送数据：
 
@@ -261,7 +261,7 @@ echo 'done';
 经过我的试验，基本上可以总结为以下两条规则：
 
 * 如果服务器尚未输出数据到客户端时中断请求，ClientRequest将触发abort事件并抛出"socket hang up"异常，该异常可以使用error事件接住，这个过程不会调用请求发起时传入的响应回调函数。
-* 如果服务器已经开始输出数据到客户端时中断请求，ClientRequest将触发abort事件但不会抛出异常，这时候响应回调函数已经被调用，IncomingMessage对象将触发aborted事件，然后再触发end事件。
+* 如果服务器已经开始输出数据到客户端时中断请求，ClientRequest将触发abort事件但不会抛出异常，这时候响应回调函数已经被调用，IncomingMessage对象将触发aborted事件，然后再触发end事件，最后触发close事件。
 
 第二条规则试验代码如下：
 
@@ -286,6 +286,8 @@ var request = http.get("http://test.dev.com/index.php",function(res) {
     }).on("aborted", function() {
         console.log("响应中断");
         str = ""; // 抛弃结果
+    }).on("close", function() {
+        console.log("连接关闭")
     }).on("end", function() {
         console.log("响应结束");
     });
@@ -294,7 +296,7 @@ var request = http.get("http://test.dev.com/index.php",function(res) {
     console.log("已经超时");
 }).on("abort", function() {
     console.log("中断请求了");
-}).on("error1", function(err) {
+}).on("error", function(err) {
     console.log("报错了");
 });
 ```
@@ -306,6 +308,79 @@ var request = http.get("http://test.dev.com/index.php",function(res) {
 中断请求了
 响应中断
 响应结束
+连接关闭
 ```
 
-# 还没完，待续
+# 禁用请求Nagle算法
+
+Nagle算法是用于减少网络负符的数据发送规则算法，由于每次发送数据都会带上20字节的TCP头以及20字节的IP头，因此哪怕数据只有一个字节最终也需要发送41个字节的数据。如果通讯发送的数据都是小数据为主，那么将会有很多冗余消耗，Nagle算法就是为了解决这种问题，它会将小包数据暂缓存起来，等数据量达到某个值时再一次性发送。
+
+ClientRequest提供了一个方法用于打开或关闭Nagle算法: setNoDelay([noDelay])，该值默认是真，表示关闭。
+
+# 100-continue协议处理
+
+当客户端POST数据给服务器端时一般会带上一个值为100-continue的报文头Expect用于询问服务器是否处理POST数据（这年头有不处理POST数据的WebServer吗？），如果服务器返回状态码100则表示它会处理POST数据，客户端这时候就可以发送报文主体内容了。一般来说只有需要POST大量数据给服务器端才会使用100-continue协议。
+
+ClientRequest提供了continue事件用于处理100-continue，当服务器返回状态码100时触发，这时候就可以调用write方法写入大量数据了，要特别注意的是写完才能够调用end方法。
+
+```php
+<?php
+header("Content-Type: text/html; charset=UTF-8");
+echo $_POST['name'];
+?>
+```
+
+```javascript
+var http = require("http");
+var url = require("url");
+
+var uri = url.parse("http://test.dev.com/index.php");
+
+var request = http.request({
+    method: "post",
+    host: uri.host,
+    path: uri.path,
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Expect": "100-continue"
+    }
+}, function(res) {
+    var str = "";
+
+    res.on("data", function(chunk) {
+        str += chunk.toString("utf-8");
+    }).on("end", function() {
+        console.log(str);
+    });
+}).on("continue", function() {
+    console.log("收到了100 continue");
+    this.write("name=benny");
+    request.end();
+});
+```
+
+运行完输出结果为：
+
+```text
+收到了100 continue
+benny
+```
+
+# 响应信息操作
+
+在调用get或者request函数发起请求时可以传一个回调函数callback作为参数，相当于监听了ClientRequest对象的response事件。当请求开始接收响应主体内容的时候将会调用该回调函数，这时候响应报文头已经解析完毕。
+
+响应回调函数会传入一个IncomingMessage对象，它提供了多个属性或方法用于获取响应信息：
+
+* httpVersion - http协议版本，比如1.1
+* headers - 一个JSON对象，以{ key1: value1, key2: value2, ... }形式存储了报文头，需要注意的是这里的key全部是小写
+* rawHeaders - 一个数组，以[key, value, key, value, ...]形式存储了报文头，需要注意的是这里的key全部是原始写法，客户端传什么它就是什么。
+* trailers - 一个JSON对象，以{ key1: value1, key2: value2, ... }形式存储了追加的报文头，需要注意的是这里的key全部是小写。由于trailers是追加在某些主体内容后的报文头，因此当响应回调函数被调用时它未必会有值。
+* rawTrailers - 一个数组，以[key, value, key, value, ...]形式存储了追加的报文头，需要注意的是这里的key全部是原始写法，客户端传什么它就是什么。
+* upgrade - 协议是否升级（比如http升级为websocket）
+* url - 请求的url
+* method - 请求的方式，比如GET
+* statusCode - 响应状态码，比如200
+* statusMessage - 响应描述，比如OK
+
+# 未完成，待续
