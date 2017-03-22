@@ -1,6 +1,6 @@
 ---
 title: Node.js - buffer模块
-categories: javascript 
+categories: Node.js学习笔记
 date: 2016-11-21 00:00:00
 tags:
   - Buffer
