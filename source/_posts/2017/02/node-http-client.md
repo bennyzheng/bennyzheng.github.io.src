@@ -384,3 +384,10 @@ benny
 * method - 请求的方式，比如GET
 * statusCode - 响应状态码，比如200
 * statusMessage - 响应描述，比如OK
+
+除此之外，IncomingMessage对象还提供了两种事件：
+
+* aborted - 当request已经中断或者网络中断，则触发此事件
+* close - 当它依赖的socket连接已经关闭时触发
+
+由于IncomingMessage本身就是一个stream，因此在使用时可以使用data、end等事件，具体示例见上方各种示例。
