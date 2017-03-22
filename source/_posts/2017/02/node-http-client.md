@@ -15,7 +15,7 @@ http模块涉及到的知识特别丰富，Node.js提供的API主要分成两大
 
 # 发送请求
 
-作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者最方便地发起一个get请求，毕竟get请求是最常见的。
+作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者更方便地发起一个get请求，毕竟get请求是最常见的。
 <!-- more -->
 
 ```javascript
@@ -131,7 +131,7 @@ ClientRequest涉及到请求报文主体的API有以下几个：
 
 网上许多文章使用了setTimeout来做超时，Node.js在v0.5.9时为ClientRequest新增加了一个setTimeout方法，它能够指定请求发起后多久如果响应数据还没接收完成则调用回调函数告诉使用者时间已经到了，使用者可以在setTimeout方法中做超时处理，比如调用ClientRequest的abort方法中断请求。另外，ClientRequest提供了clearTimeout方法用于取消计时器。
 
-以下是php代码，它请在接收到请求后先睡眠3秒再发送数据：
+以下是php代码，它将在接收到请求后先睡眠3秒再发送数据：
 
 ```php
 <?php
@@ -242,6 +242,7 @@ var request = http.get("http://test.dev.com/index.php",function(res) {
 
 ```php
 <?php
+ob_end_clean();
 header("Content-Type: text/html; charset=UTF-8");
 echo 'hello';
 flush();
@@ -267,6 +268,7 @@ echo 'done';
 
 ```php
 <?php
+ob_end_clean();
 header("Content-Type: text/html; charset=UTF-8");
 echo 'hello';
 flush();
@@ -382,5 +384,3 @@ benny
 * method - 请求的方式，比如GET
 * statusCode - 响应状态码，比如200
 * statusMessage - 响应描述，比如OK
-
-# 未完成，待续
