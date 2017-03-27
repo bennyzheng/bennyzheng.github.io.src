@@ -13,7 +13,7 @@ URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的�
 
 Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。
 
-![Node.js的URL结构图](/images/2016/url.png)
+![ur](/media/14906296574526/url.png)
 
 Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：
 
@@ -94,3 +94,6 @@ var value = "http://www.site.com/?key=" + encodeURIComponent("这是中文值");
 // url的值为value的值，value的值也需要编码。
 var url = "http://mysite.com/?url=" + encodeURIComponent(value);
 ```
+
+
+

@@ -8,6 +8,7 @@ tags:
   - ArrayBuffer
   - Binary
 ---
+
 Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。
 <!-- more -->
 # ArrayBuffer

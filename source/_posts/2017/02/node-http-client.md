@@ -32,7 +32,8 @@ http.get("http://test.dev.com/index.php",function(res) {
 });
 ```
 
-request函数是完整形态的请求方式，提供了大量的参数设置定制请求，它的函数说明是**http.request(options[, callback])**。与get不同，第一个参数是一个对象，并且需要自己解析url填充参数，以下是上一个例子的request写法：
+request函数是完整形态的请求方式，提供了大量的参数设置定制请求，它的函数说明是**http.request(options[, callback])**。与get不同，第一个参数是一个对象，并且需要自己解析
+url填充参数，以下是上一个例子的request写法：
 
 ```javascript
 var http = require("http");
@@ -390,4 +391,6 @@ benny
 * aborted - 当request已经中断或者网络中断，则触发此事件
 * close - 当它依赖的socket连接已经关闭时触发
 
-由于IncomingMessage本身就是一个stream，因此在使用时可以使用data、end等事件，具体示例见上方各种示例。
+由于IncomingMessage本身就是一个stream，因此在使用时可以使用data、end等事件，具体示例见上方各种示例
+
+
