@@ -13,6 +13,11 @@
 {% endif %}
 
 
+{% if theme.yandex_site_verification %}
+  <meta name="yandex-verification" content="{{ theme.yandex_site_verification }}" />
+{% endif %}
+
+
 {% if theme.baidu_site_verification %}
   <meta name="baidu-site-verification" content="{{ theme.baidu_site_verification }}" />
 {% endif %}
@@ -42,11 +47,11 @@
 <link href="{{ url_for(theme.css) }}/main.css?v={{ theme.version }}" rel="stylesheet" type="text/css" />
 
 {% if page.keywords %}
-  <meta name="keywords" content="{{ page.keywords }}, {{ config.keywords }}" />
+  <meta name="keywords" content="{{ page.keywords }}" />
 {% elif page.tags and page.tags.length %}
-  <meta name="keywords" content="{% for tag in page.tags %}{{ tag.name }},{% endfor %} {{ config.keywords }}" />
+  <meta name="keywords" content="{% for tag in page.tags %}{{ tag.name }},{% endfor %}" />
 {% elif theme.keywords %}
-  <meta name="keywords" content="{{ theme.keywords }}, {{ config.keywords }}" />
+  <meta name="keywords" content="{{ theme.keywords }}" />
 {% endif %}
 
 

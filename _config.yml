@@ -81,9 +81,9 @@ feed:
   hub:
 
 # duoshuo
-duoshuo_shortname: bennyzheng
-duoshuo_share: true
-duoshuo_hotartical: true
+#duoshuo_shortname: bennyzheng
+#duoshuo_share: true
+#duoshuo_hotartical: true
 
 # search
 search:
