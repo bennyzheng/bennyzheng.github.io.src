@@ -1,6 +1,7 @@
 ---
 title: Node.js - http模块客户端篇
 categories: Node.js学习笔记
+date: 2017-03-22 00:00:00
 tags:
     - Node.js
     - http
@@ -12,11 +13,11 @@ tags:
 过年休息了一阵子，似乎吃胖了一圈，想想该继续研究Node.js的东西了。
 http模块涉及到的知识特别丰富，Node.js提供的API主要分成两大块，一部份是客户端发请求，另一部份是服务器端的http服务。涉及到的模块也较多，比如net模块、dns模块等等。
 
+<!-- more -->
 
-# 发送请求
+## 发送请求
 
 作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者更方便地发起一个get请求，毕竟get请求是最常见的。
-<!-- more -->
 
 ```javascript
 var http = require("http");
@@ -60,7 +61,7 @@ request.end();
 
 要注意的是，get和request都会返回一个ClientRequest对象，get会自动调用该对象的end方法，而request则需要使用者自己调用。
 
-# 请求报文头操作
+## 请求报文头操作
 
 当发起一个请求，在调用ClientRequest的write方法或者end方法之前都可以操作请求的报文头。get函数会自动调用end方法，但并不是调用get函数之后马上就调用end方法，按手册描述就是报文头已经进入发送队列，但是它依然处于可修改的状态。
 
@@ -114,7 +115,7 @@ request.addTrailers({ "Content-Hash": encodeURIComponent("这是主体内容的h
 request.end();
 ```
 
-# 请求报文主体操作
+## 请求报文主体操作
 
 get方式的请求不需要报文主体，而post之类的请求则需要报文主体，最常见的报文主体是application/x-www-form-urlencoded类型，内容格式就相当于URL上的查询字符串（比如：a=1&b=2）。请求发送报文主体需要同时设置报文主体的格式，比如上一个例子需要将请求报文头Content-Type的值设置为application/x-www-form-urlencoded。
 
@@ -128,7 +129,7 @@ ClientRequest涉及到请求报文主体的API有以下几个：
 * end - 最后一次追加报文主体（可选）并关闭写入流
 * flush - 将缓冲区的报文主体内容清空并发送
 
-# 请求超时与中断处理
+## 请求超时与中断处理
 
 网上许多文章使用了setTimeout来做超时，Node.js在v0.5.9时为ClientRequest新增加了一个setTimeout方法，它能够指定请求发起后多久如果响应数据还没接收完成则调用回调函数告诉使用者时间已经到了，使用者可以在setTimeout方法中做超时处理，比如调用ClientRequest的abort方法中断请求。另外，ClientRequest提供了clearTimeout方法用于取消计时器。
 
@@ -314,13 +315,13 @@ var request = http.get("http://test.dev.com/index.php",function(res) {
 连接关闭
 ```
 
-# 禁用请求Nagle算法
+## 禁用请求Nagle算法
 
 Nagle算法是用于减少网络负符的数据发送规则算法，由于每次发送数据都会带上20字节的TCP头以及20字节的IP头，因此哪怕数据只有一个字节最终也需要发送41个字节的数据。如果通讯发送的数据都是小数据为主，那么将会有很多冗余消耗，Nagle算法就是为了解决这种问题，它会将小包数据暂缓存起来，等数据量达到某个值时再一次性发送。
 
 ClientRequest提供了一个方法用于打开或关闭Nagle算法: setNoDelay([noDelay])，该值默认是真，表示关闭。
 
-# 100-continue协议处理
+## 100-continue协议处理
 
 当客户端POST数据给服务器端时一般会带上一个值为100-continue的报文头Expect用于询问服务器是否处理POST数据（这年头有不处理POST数据的WebServer吗？），如果服务器返回状态码100则表示它会处理POST数据，客户端这时候就可以发送报文主体内容了。一般来说只有需要POST大量数据给服务器端才会使用100-continue协议。
 
@@ -369,7 +370,7 @@ var request = http.request({
 benny
 ```
 
-# 响应信息操作
+## 响应信息操作
 
 在调用get或者request函数发起请求时可以传一个回调函数callback作为参数，相当于监听了ClientRequest对象的response事件。当请求开始接收响应主体内容的时候将会调用该回调函数，这时候响应报文头已经解析完毕。
 
@@ -391,6 +392,5 @@ benny
 * aborted - 当request已经中断或者网络中断，则触发此事件
 * close - 当它依赖的socket连接已经关闭时触发
 
-由于IncomingMessage本身就是一个stream，因此在使用时可以使用data、end等事件，具体示例见上方各种示例
-
+由于IncomingMessage本身就是一个stream，因此在使用时可以使用data、end等事件，具体示例见上方各种示例。
 

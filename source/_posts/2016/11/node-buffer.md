@@ -7,8 +7,11 @@ tags:
   - Binary
   - Node.js
 ---
+
 刚把Javascript本身新引入的TypeArray以及ArrayBuffer好了解了一下，Node.js针对二进制数据提供了buffer模块，手册中提到Buffer是Int8Array的另一种更适合Node.js使用的实现方式（我看是因为之前TypeArray还没实现结果先出了Buffer，现在准备一条道走到黑吧……不过确实用起来挺好用）。在Node.js的数据交换过程中，buffer模块经常会被使用到，比如数据流。
+
 <!-- more -->
+
 # Buffer的初始化
 
 使用buffer模块不需要使用require引入模块，全局提供了一个Buffer对象（可见它使用频率有多频繁）。虽然Buffer可以使用new关键词创建一个实例，但手册上明确表示它已经被弃用，我们应该使用alloc之类的API创建。

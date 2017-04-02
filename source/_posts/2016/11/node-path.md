@@ -7,10 +7,13 @@ tags:
   - Path
   - URL
 ---
+
 Node.js提供了一组非常方便的API专门用来操作路径。不过当你翻开Node.js手册关于path模块的时候，开头那个大大的章节标题"**Windows vs. POSIX**"呈现在你的面前，不知道你是什么感觉？反正我是觉得蛋疼乳酸菊花紧，兼容问题到哪都逃不掉啊！  
  Win32以及类Unix的POSIX标准在路径上真心差距很大，这个只要玩过windows以及类Unix系统的人都知道，许多代码由于路径兼容问题直接无法跨平台使用。
+ 
 <!-- more -->
-# 不同平台的路径差异
+
+## 不同平台的路径差异
 
 路径格式在大多数平台上都是POSIX标准格式，文件系统的根目录为/，然后各种设备（包括多个磁盘也一样）以它为根目录挂载为某个路径，因此任何目录在整个文件系统中的绝对路径都是一致的。
 
@@ -20,7 +23,7 @@ Windows与POSIX在文件、目录名的命名上也略有不同，早期FAT16系
 
 或许许多前端工程师没关注过什么叫POSIX，简单来说类Unix的系统（linux、BSD、OSX、Unix……）都是遵守POSIX规范的，这里引用一下百度百科对其做说明：
 
->POSIX表示可移植操作系统接口（Portable Operating System Interface ，缩写为 POSIX ），POSIX标准定义了操作系统应该为应用程序提供的接口标准，是IEEE为要在各种UNIX操作系统上运行的软件而定义的一系列API标准的总称，其正式称呼为IEEE 1003，而国际标准名称为ISO/IEC 9945。  
+> POSIX表示可移植操作系统接口（Portable Operating System Interface ，缩写为 POSIX ），POSIX标准定义了操作系统应该为应用程序提供的接口标准，是IEEE为要在各种UNIX操作系统上运行的软件而定义的一系列API标准的总称，其正式称呼为IEEE 1003，而国际标准名称为ISO/IEC 9945。  
 POSIX标准意在期望获得源代码级别的软件可移植性。换句话说，为一个POSIX兼容的操作系统编写的程序，应该可以在任何其它的POSIX操作系统（即使是来自另一个厂商）上编译执行。  
 POSIX 并不局限于 UNIX。许多其它的操作系统，例如 DEC OpenVMS 支持 POSIX 标准，尤其是 IEEE Std. 1003.1-1990（1995 年修订）或 POSIX.1，POSIX.1 提供了源代码级别的 C 语言应用编程接口（API）给操作系统的服务程序，例如读写文件。POSIX.1 已经被国际标准化组织（International Standards Organization，ISO）所接受，被命名为 ISO/IEC 9945-1:1990 标准。
 
@@ -38,11 +41,11 @@ posixUrl在windows下同样认识，但它的位置取决于file.ext文件在哪
 * path.win32 - 强制使用windows的路径规范处理路径
 * path.posix - 强制使用posix的路径规范处理路径，根据我的实验，貌似这就是默认的处理方式。
 
-# path模块的方法
+## path模块的方法
 
 Node.js的path模块针对上述路径差异也提供了相应的API或属性，个人认为，尽可能不要使用windows的路径写法。
 
-## path.basename(path[, ext])
+### path.basename(path[, ext])
 
 basename函数可以把路径最后一部份的名字返回，同时你如果使用了扩展名参数，它将自动将扩展名去掉，仅返回文件名（如果最后一部份是文件名的话）。
 
@@ -89,7 +92,7 @@ var url = "E:\\wwwroot\\mysite\\myfile.js";
 console.log(path.win32.basename(url));
 ```
 
-## path.dirname(path)
+### path.dirname(path)
 
 获取指定路径的目录名，它默认将basename当成文件名处理，也就是获取除了路径最后一部份之前的那一段路径。
 
@@ -115,7 +118,7 @@ url = "/wwwroot/site/";
 console.log(path.dirname(url));
 ```
 
-## path.extname(path)
+### path.extname(path)
 
 获取路径的扩展名。
 
@@ -144,7 +147,7 @@ path.extname('.index')
 
 很幸福的，这个函数在windows系统下表现与POSIX一致。
 
-## path.format(pathObject)
+### path.format(pathObject)
 
 格式化一个pathObject，将其转成一个合法的字符串。pathObject可以拥有以下属性：
 
@@ -238,7 +241,7 @@ console.log(path.format(pathObject));
 
 虽然path.format是如此弱智，但还是有办法补救的，我们还有一个path.normalize可以用来对它做处理。
 
-## path.isAbsolute(path)
+### path.isAbsolute(path)
 
 判断路径是否为绝对路径，这里同样存在兼容问题，由于API默认以POSIX标准为准，因此如果路径是一个windows规范路径，那么需要使用path.win32.isAbsolute来做判断，所以千万不要随便使用windows规范的路径。
 
@@ -258,7 +261,7 @@ console.log(path.isAbsolute(url));
 console.log(path.win32.isAbsolute(url));
 ```
 
-## path.join([...paths])
+### path.join([...paths])
 
 将多个路径连接在一起，它相对于path.format来说非常智能，你不用担心它生成的路径会出现"//"，也不用担心各种弱智的表现，唯一要考虑的是你输入的路径应该是个字符串。
 
@@ -272,7 +275,7 @@ path.join('foo', {}, 'bar')
 // throws TypeError: Arguments to path.join must be strings
 ```
 
-## path.normalize(path)
+### path.normalize(path)
 
 在体验过path.format之后，我们需要一个函数对它生成的可能乱七八糟的路径做整理，使其变成一个很规范没有冗余字符的路径，path.normalize就是一个很好的选择。它能够识别.以及..，同时也能够帮你去除多余的/，有点不足的是它不识别windows路径分隔符\。
 
@@ -293,7 +296,7 @@ console.log(path.win32.normalize(url));
 // /wwwroot/dir0/myfile.txt 正解！
 console.log(path.normalize(url.replace(/\\/g, "/")));
 ```
-## path.parse(path)
+### path.parse(path)
 
 将一个合法路径解析成一个pathObject，格式参考format函数。
 这个方法同样不怎么智能，建议使用它的时候先做一下处理（请参考path.normalize示例代码）。
@@ -344,7 +347,7 @@ console.log(path.parse(url.replace(/\\/g, "/")));
 console.log(path.parse(path.normalize(url.replace(/\\/g, "/"))));
 ```
 
-## path.relative(from, to)
+### path.relative(from, to)
 
 获取to参数相对于from参数的相对路径。
 
@@ -357,7 +360,7 @@ path.relative('/data/orandea/test/aaa', '/data/orandea/impl/bbb')
 // returns '../../impl/bbb'
 ```
 
-## path.resolve([...paths])
+### path.resolve([...paths])
 
 这个函数与path.join非常相似，但它将会得到一个绝对路径，并且该路径是基于磁盘文件系统的，得到的结果与当前工作目录有关。
 
@@ -374,9 +377,9 @@ console.log(path.resolve("./", "myfile"));
 console.log(path.resolve("./dir", "/myfile"));
 ```
 
-# path模块的属性
+## path模块的属性
 
-## path.delimiter
+### path.delimiter
 
 保存了当前系统下多个路径的分隔符，它的值在windows系统下是;，在POSIX规范的系统下是:。
 如果不理解，请查看当前系统的系统变量PATH的值，它就是多个路径连接在一起的。
@@ -391,14 +394,15 @@ process.env.PATH.split(path.delimiter)
 // returns ['/usr/bin', '/bin', '/usr/sbin', '/sbin', '/usr/local/bin']
 ```
 
-## path.sep
+### path.sep
 
 保存了当前系统下使用的目录分隔符，它的值在windows下是\，在POSIX规范的系统下是/。
 
-## path.posix
+### path.posix
 
 提供了一套针对遵守posix规范的系统的API支持，从目前的试验来看，我们完全可以使用path.xxx来调用API，因为path.posix就是默认的方式。
 
-## path.win32
+### path.win32
 
 提供了一套针对windows系统的API支持，考虑到可移植性，强烈建议不要在你的程序中使用。
+

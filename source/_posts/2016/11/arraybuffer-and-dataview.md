@@ -10,8 +10,10 @@ tags:
 ---
 
 Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。
+
 <!-- more -->
-# ArrayBuffer
+
+## ArrayBuffer
 
 ArrayBuffer是ES6新引入的用于处理二进制数组的缓冲区对象，它不提供对数据的操作能力，提供的是二进制数据的存储。
 
@@ -36,11 +38,11 @@ var buffer = ArrayBuffer(1024); // 1024个字节，即1kb
 
 * ArrayBuffer.isView(arg) - 如果参数是TypeArray或者DataView，则返回true，否则返回false。
 
-# 数据视图
+## 数据视图
 
 之前提到过ArrayBuffer仅仅是提供了对数据的存储，相当于动态申请了一段内存（当然你不需要像C/C++一般去释放它，或者在不需要的时候也可以将其设置为null由gc自动释放），对于这段缓冲区的操作则是由一组TypeArray以及灵活度更高的DataView对象来提供。
 
-## TypeArray
+### TypeArray
 
 类型数组提供了几种强类型数组对ArrayBuffer中的数据进行读写，其中包括：
 
@@ -60,7 +62,7 @@ var buffer = ArrayBuffer(1024); // 1024个字节，即1kb
 
 类型数组提供的初始化方式、API都是一模一样的，除了元素类型。
 
-### 初始化
+#### 初始化
 
 初始化一个TypeArray有多种方法：
 
@@ -135,7 +137,7 @@ console.log(int8Array.length, int8Array.byteLength);
 console.log(int16Array.length, int16Array.byteLength);
 ```
 
-### 静态成员
+#### 静态成员
 
 * TypeArray.BYTES_PER_ELEMENT - 返回该种TypeArray（注意，不要直接写TypeArray，应该是Int8Array之类的对象）每个元素占的字节数。
 * TypeArray.from(source[, mapFn[, thisArg]]) - 从一个可遍历的对象(Set、Array、String之类)中创建一个类型数组。  
@@ -184,7 +186,7 @@ console.log(
 );
 ```
 
-### 成员变量
+#### 成员变量
 
 * buffer - TypeArray内部使用的ArrayBuffer对象，如果将一个外部ArrayBuffer当参数构造了一个TypeArray，那么该buffer就是那个外部ArrayBuffer。如果为同一个ArrayBuffer建立两个TypeArray，当使用了其中一个TypeArray的API对数据做修改，另一个也会生效，因为它们使用了同一个数据源。
 
@@ -234,7 +236,7 @@ var int16Array = new Int16Array(buffer);
 console.log(int8Array.length, int16Array.length);
 ```
 
-### 成员方法
+#### 成员方法
 
 TypeArray实现了大部份Array的方法，所以你可以调用类似map、every之类的方法处理数据。这方面的方法与属性就不在这里数说了，仅列出Array没有的。
 
@@ -272,11 +274,11 @@ int8Array[2] = 20;
 console.log(subarray);
 ```
 
-## DataView
+### DataView
 
 DataView提供了相对TypeArray更为灵活的方式用于操作数据，从TypeArray的各种示例上看，TypeArray其实就对应着C语言的数组（定长、元素同类型），而DataView则可以操作类似结构体的东西，它允许你随时切换不同的类型读写数据。
 
-### 初始化
+#### 初始化
 
 new DataView(buffer [, byteOffset [, byteLength]])
 
@@ -294,11 +296,11 @@ var view = new DataView(buffer);
 console.log(view);
 ```
 
-### 成员变量
+#### 成员变量
 
 与TypeArray一模一样，DataView拥有buffer、byteOffset以及byteLength三个成员变量，它们的作用也是一样的，所以这里不再详说。
 
-### 成员方法
+#### 成员方法
 
 DataView的成员方法提供了一系列的get、set方法，用法基本上一致： 
 
@@ -331,7 +333,7 @@ console.log(view.getInt8(0));
 
 关于Endian方面请看后边章节。
 
-# 数据的存储方式
+## 数据的存储方式
 说说这些类型数组元素的数据表示方式吧！当然，我不打算在这里全部讲完，特别是IEEE规定的单精度浮点数和双精度浮点数是怎么用二进制表示的估计能另起一篇文章。
 
 一个整型数字写成2进制之后以书写习惯来说左边是高位，右边是低位。举个例子，int8的5使用二进制是这么表示的：
@@ -391,7 +393,7 @@ console.log(view.getInt8(0));
 
 它的值如我们所料是0，这就是补码。uint8由于没有正负之分，它的所有值都是非负数，所以就不需要考虑补码。
 
-# 数据溢出截断
+## 数据溢出截断
 
 首先需要了解一下int16用二进制是如何表示的，以3850为例子，它的二进制表示方式是这样子的：
 
@@ -436,7 +438,7 @@ console.log(int8Array);
 
 很明显，它把15抛弃了，也就是保存了低位字节，抛弃高位。事实上，溢出处理在各种CPU上都是保留低位能保留的字节，把高位的截断，这个与数据存储是按高位优先还是低位优先没什么关系。
 
-# 字节序处理
+## 字节序处理
 
 请先看以下示例代码在我机子上跑的情况：
 

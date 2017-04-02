@@ -8,9 +8,12 @@ tags:
   - Buffer
   - Binary
 ---
+
 近期一位同事问起数据流方面的问题，在做前端开发时很少直接面对数据流，只有在做node.js相关的东西会接触得比较多。我当时简单做了一些解答，但我认为我解答得不是很好，至少她还是一脸的迷茫。于是我准备在这里试着讲清数据流的来龙去脉。
+
 <!-- more -->
-# 认识数据流
+
+## 认识数据流
 
 数据流是数据操作的抽象，它以统一的API、高效的内部实现让数据操作者很方便地操作多种设备上的数据，简单一点可以把数据流当成一组操作数据的API。
 
@@ -34,7 +37,7 @@ int fclose(FILE *stream);
 标准I/O的底层实现依然是调用了低级I/O，并且在低级I/O上再做了一层封装，实现了缓冲区，允许数据预读、缓写等缓冲功能，减少了与设备打交道的次数，也提高了性能。
 请注意标准I/O的原型声明，FILE \*类型的变量被命名为stream。由于C不是面向对象的，File \*stream代表着数据，加上配套的标准I/O共同组成了数据流。**数据流对原始数据操作做了一层封装，使其更合理、高效并且拥有了统一的API**。
 
-# 数据流的使用
+## 数据流的使用
 
 Java语言给流抽象了四种类型:
 
@@ -56,7 +59,7 @@ Java语言给流抽象了四种类型:
 
 对于一名前端工程师来说弄懂Node.js的数据流帮助更大，以下就以Node.js的数据流来做一些实验。
 
-## Readable
+### Readable
 
 fs模块提供了文件读写功能，其中有一个方法readFileSync非常方便，它可以一次性把文件内容返回给应用程序，示例代码如下：
 
@@ -189,7 +192,7 @@ stream.on("end", function() {
 
 fs.appendFile是个异步操作，在触发data事件的时候先让数据流暂停（这时候不再触发data事件），然后开始异步写数据，写完数据调用resume让数据流重新开始流动。
 
-## Writable
+### Writable
 
 Writable流允许向一个数据设备写入数据，它拥有以下事件：
 
@@ -262,7 +265,7 @@ wstream.setDefaultEncoding("utf-8");
 stream.pipe(wstream);
 ```
 
-## Duplex & Transform
+### Duplex & Transform
 
 看了Node.js关于双向流的手册，里边介绍非常简单，双向流是Readable和Writable的合体，也就是说我们可以把它当Readable使用也可以当Writable使用，二者有的事件与方法双向流也都有，因此在这里不再重复说明。
 
@@ -281,7 +284,7 @@ stream.pipe(gz).pipe(wstream);
 
 示例中，gz对象是zlib创建的一个Transform流，它的工作就是外部写入数据，然后它对其做压缩处理后输出给wstream写入文件中，这种方式在gulp脚本中应用非常多。
 
-# 数据流的扩展
+## 数据流的扩展
 
 四种数据流都是基类，类似fs.createReadStream返回的数据流其实都是它们的子类。要实现自己的数据流，需要继承相应的数据流，并且实现关键方法：
 
@@ -290,7 +293,7 @@ stream.pipe(gz).pipe(wstream);
 * Duplex: _read, _write, _writev
 * Transform: _transform, _flush
 
-## Readable
+### Readable
 
 Readable可以使用new Readable创建一个子类，并传入这些参数：
 
@@ -374,7 +377,7 @@ stream.on("data", function(chunk) {
 
 除了这两个方法，还可以使用es6的extends来扩展，手册中有不再详说。
 
-## Writable
+### Writable
 
 创建一个Writable的子类可以传入以下参数：
 
@@ -451,7 +454,7 @@ stream.end();
 
 从这里可以看出Readable跟Writable与数据设备交互的时候略有不同，前者必须用同步读取，因为数据必须马上返回给外部，而Writable则可以异步写数据，因为数据设备的写入速度不可预知，而外部数据是写到缓冲区中的。
 
-## Duplex
+### Duplex
 
 Duplex在手册中一直强调是Readable以及Writable的合体，非常经典的应用就是tcp socket。它的扩展方式是Readable以及Writable二者扩展方式的合并，不过在创建子类的时候参数略有不同，单独出现Duplex的原因是因为Javascript不支持多重继承（囧）。
 
@@ -464,7 +467,7 @@ Duplex在手册中一直强调是Readable以及Writable的合体，非常经典�
 
 这里不再对Duplex的实现做示例，因为仅仅是Readable和Writable实现的合并。
 
-## Transform
+### Transform
 
 Transform是对Duplex的扩展，它的作用更多是用在数据的处理环节上，工程师调用Transform的write方法写入数据，然后Transform将数据交给_transform做处理，处理完后再写入read的缓冲区允许外部读取，gulp在这方面应用得特别多。
 
@@ -500,4 +503,5 @@ stream.on("data", function(chunk) {
 
 stream.write(str);
 ```
+
 

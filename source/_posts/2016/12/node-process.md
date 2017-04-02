@@ -1,7 +1,7 @@
 ---
 title: Node.js - 进程学习笔记
 categories: Node.js学习笔记
-date: 2017-03-22 00:00:00
+date: 2017-12-01 00:00:00
 tags:
   - process
   - child_process
@@ -20,7 +20,7 @@ child_process模块则是Node.js提供给父进程使用的模块，想要学习
 
 <!-- more -->
 
-# 生命周期
+## 生命周期
 
 一个进程拥有五种状态，在运行期间总会处于其中的一种，并且在各种状态之间互相转换。
 
@@ -33,7 +33,7 @@ child_process模块则是Node.js提供给父进程使用的模块，想要学习
 ![process-status](/media/14906298273817/process-status.gif)
 
 
-# 输入与输出
+## 输入与输出
 
 Javascript在许多宿主环境中由于安全限制没有得到文件读写权限，也没有标准的输入输出，但在Node.js中运行则不一样，这真正是个应用程序，因此可以像其它编程语言一般访问到标准输入输出设备。
 
@@ -97,7 +97,7 @@ process.emitWarning("this is warning");
 
 其中第一行是emitWarning函数调用输出的，而在warning事件响应中把事件对象输出则会将警告的详细调用堆栈信息输出。要特别注意的是emitWarning输出的内容是输出到stderr设备中，console.log则是将内容输出到stdout。
 
-# 异常处理
+## 异常处理
 
 Node.js环境下的应用程序在默认情况下如果发生错误将会马上报错并且退出程序，一般来说可以通过try-catch来捕获错误:
 
@@ -211,7 +211,7 @@ if (cluster.isMaster) {
     }, 5000);
 }
 ```
-# 退出处理
+## 退出处理
 
 当一个Node.js应用程序在没有任何需要处理的任务时将会退出运行，但也可以主动调用process对象的exit方法退出程序，同时指定退出时的状态代码。状态代码默认为0，表示程序是正常退出，非0则表示异常退出，调用该应用程序的父进程（或控制台）可以获取到该退出状态代码的值以做其它处理。
 
@@ -278,7 +278,7 @@ process.on("beforeExit", function() {
 
 主动退出应用程序还有另一个与exit类似的方法abort，它表示中断程序运行，同时会给出一个核心文件内容以供开发者分析。
 
-# 延迟执行任务
+## 延迟执行任务
 
 在写代码时有时候有些任务不需要同步执行，可以使用setTimeout(xxx, 0)来做延迟执行，但Node.js提供了更有效率的方法：process.nextTick。
 
@@ -314,7 +314,7 @@ console.log("我要输出2");
 
 从这里可以看出，text.js的主体代码是一个任务，"我要输出1"以及"我要输出2"最先被执行，然后执行nextTick注册的任务。setTimeout注册的任务并不会马上被执行，它并不在事件循环中，使用的是Javascript内部的任务队列。
 
-# 参数处理
+## 参数处理
 
 进程对象提供了几个属性用于读取进程的参数信息：
 
@@ -350,9 +350,9 @@ console.log(process.execArgv);
 
 PS:建议使用argv模块来处理参数相关的事务，它可以在[npmjs站点的argv相关页面](https://www.npmjs.com/package/argv)获取，使用npm install argv安装。
 
-# 子进程
+## 子进程
 
-## 建立子进程
+### 建立子进程
 
 建立一个子进程相当于执行磁盘上的某个可执行文件，把该可执行文件建立起来的进程当做当前进程的子进程。
 
@@ -458,11 +458,11 @@ process.send("this is child!");
 
 要注意的是fork是不能通过child.stdout来获取数据的，子进程与父进程是通过IPC通道进行通讯。另外，fork它并不是将当前进程复制一份作为子进程（其它语言都是这么干的），而是指定一个模块建立一个子进程。
 
-## 子进程输入输出
+### 子进程输入输出
 
 建立子进程时可以通过设置options参数的stdio指定子进程使用的IO，它的值只可以是一个字符串用于一次性为子进程指定输入输出流也可以使用数组分开为stdin/stdout/stderr指定值，这个参数也是父进程与子进程进行通讯的重要基础。
 
-### pipe - 流管道
+#### pipe - 流管道
 
 默认值，相当于['pipe', 'pipe', 'pipe']，它会将ChildProcess的输入当成子进程的输入的管道上流，同时将ChildProcess进程的输出当成子进程输出的管道下流。
 
@@ -496,13 +496,13 @@ process.stdin.on("data", function(chunk) {
 父进程的stdout接收到: 子进程的stdin接收到: hello child!
 ```
 
-### inherit - 共享IO
+#### inherit - 共享IO
 
 如果将stdio设置为'inherit'，则可以让子进程共享父进程的标准IO，二者共用同一套stdio。相当于[process.stdin, process.stdout, process.stderr]或者[0, 1, 2]（因为标准IO套接字就是0、1、2）。
 
 需要注意的是，如果分开设置标准IO，可以将其中一个输入输出指定成某个流或者套接字，比如一个socket stream。
 
-### ipc - 进程间通信
+#### ipc - 进程间通信
 
 当stdio是一个数组，并且拥有ipc值的时候将为开启IPC通道（仅能开一个），子进程将可以使用process.send向父进程发送消息，父进程可以通过监听ChildProcess的message事件来获取该消息。使用fork函数建立子进程时默认开启双向IPC通道，父进程也可以调用ChildProcess的send方法向子进程发送消息。 
 
@@ -550,11 +550,11 @@ child.on("message", function(message) {
 child.send("hello child!");
 ```
 
-### ignore - 忽略IO
+#### ignore - 忽略IO
 
 当给子进程设置标准IO为ignore时，子进程将会把标准IO指向/dev/null，Unix会忽略对这个空设备的读写操作，相当于没有打开任何IO设备，可以单独为某个IO设置ignore值，比如[0, 'ignore', 'ignore']。
 
-## 独立子进程
+### 独立子进程
 
 detached默认为false，意味着子进程依附父进程运行，当父进程中断退出时子进程也会随之退出，父进程也会等待所有子进程退出运行才退出运行。如果将detached设置为true，那么父进程退出时子进程是不会退出运行的，它是一个独立的进程，父进程调用child.unref方法可以让子进程从父进程的事件循环中删除，父进程可以独立退出运行而不影响子进程。
 
@@ -581,7 +581,7 @@ setTimeout(function() {
 
 有文章说stdio必须设置为ignore或者另开一个套接字，不能使用父进程的stdio，否则会导致高用child.unref方法时父进程还会等待子进程退出才退出，但我实际测试了并没有这种情况，或许是版本问题，我使用的是v7.0.0，如果发生这种情况可以按示例中注释掉的代码将子进程的stdout重定向到一个文件中。
 
-## 子进程事件
+### 子进程事件
 
 事件是子进程主动对外（父进程）发送消息的重要手段，ChildProcess对象提供了5种事件给父进程绑定：
 
@@ -592,7 +592,7 @@ setTimeout(function() {
 * message - 当子进程调用process.send向父进程发送消息时分发
 
 
-# 进程信号
+## 进程信号
 
 进程在支持POSIX的系统中实现了系统信号，具体列表请查阅POSIX信号列表。process可以监听部份允许监听的系统信号做出相应的处理，但也有很多信号是无法监听直接执行默认行为的。
 
@@ -634,6 +634,7 @@ setTimeout(function() {}, 3000);
 ```
 
 可以看出，kill方法并不是真的把子进程杀死，而是起到一个发送信号的作用，具体怎么处理完全取决于子进程。但并不是所有信号都会有给子进程反应的机会，如果将上边示例的kill调用参数换成"SIGKILL"，那么子进程完全没有输出任何信息的机会直接退出运行。
+
 
 
 

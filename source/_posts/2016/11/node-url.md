@@ -7,13 +7,19 @@ tags:
   - URL
   - Path
 ---
+
+# Node.js - url模块
+
 URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站"碧海银沙"，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。  
+
 <!-- more -->
-# URL的结构
+
+## URL的结构
 
 Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。
 
 ![ur](/media/14906296574526/url.png)
+
 
 Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：
 
@@ -50,7 +56,7 @@ var urlObject = {
 }
 ```
 
-# URL模块API
+## URL模块API
 
 URL模块仅提供了3个函数，没有提供类或者其它东西：
 
@@ -66,17 +72,17 @@ url.resolve('http://example.com/', '/one')    // 'http://example.com/one'
 url.resolve('http://example.com/one', '/two') // 'http://example.com/two'
 ```
 
-# 小贴士
+## 小贴士
 
 * 弄清绝对路径的根目录在哪  
   
   在构建一个页面时为了方便可能会使用绝对路径，绝对路径是以/开头的路径，对绝对路径不大了解的前端可能会就发现直接在服务器上查看HTML文件时正常，但直接双击打开html文件则发生路径错误。这时需要认清这绝对路径的根目录到底是哪里。  
   
-  假设我们的站点放在/wwwroot/mysite，访问地址是http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。  
+  假设我们的站点放在/wwwroot/mysite，访问地址是[http://mysite.com](http://mysite.com)，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。  
   
-  这时候访问http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。    
+  这时候访问[http://mysite.com/index.html](http://mysite.com/index.html)，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。    
   
-  这是因为在使用域名访问index.html时，绝对路径是指http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。
+  这是因为在使用域名访问index.html时，绝对路径是指[http://mysite.com/](http://mysite.com/)，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。
 
 * 查询字符串的编码  
   
@@ -94,6 +100,9 @@ var value = "http://www.site.com/?key=" + encodeURIComponent("这是中文值");
 // url的值为value的值，value的值也需要编码。
 var url = "http://mysite.com/?url=" + encodeURIComponent(value);
 ```
+
+
+
 
 
 
